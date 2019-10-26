@@ -28,7 +28,6 @@ public class DAO<T> {
 		em.getTransaction().commit();
 
 		// fecha a entity manager
-		em.close();
 	}
 
 	public void remove(T t) {
@@ -38,7 +37,6 @@ public class DAO<T> {
 		em.remove(em.merge(t));
 
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	public void atualiza(T t) {
@@ -48,7 +46,6 @@ public class DAO<T> {
 		em.merge(t);
 
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	public List<T> listaTodos() {
@@ -65,7 +62,6 @@ public class DAO<T> {
 	public T buscaPorId(Integer id) {
 		EntityManager em = new JPAUtil().getEntityManager();
 		T instancia = em.find(classe, id);
-		em.close();
 		return instancia;
 	}
 
@@ -73,7 +69,6 @@ public class DAO<T> {
 		EntityManager em = new JPAUtil().getEntityManager();
 		long result = (Long) em.createQuery("select count(n) from livro n")
 				.getSingleResult();
-		em.close();
 
 		return (int) result;
 	}
@@ -86,7 +81,6 @@ public class DAO<T> {
 		List<T> lista = em.createQuery(query).setFirstResult(firstResult)
 				.setMaxResults(maxResults).getResultList();
 
-		em.close();
 		return lista;
 	}
 
