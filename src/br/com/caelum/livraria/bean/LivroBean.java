@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
@@ -14,14 +15,16 @@ import br.com.caelum.livraria.dao.AutorDao;
 import br.com.caelum.livraria.dao.LivroDao;
 import br.com.caelum.livraria.modelo.Autor;
 import br.com.caelum.livraria.modelo.Livro;
+import br.com.caelum.livraria.tx.Transacional;
 
 @Named
 @javax.faces.view.ViewScoped
 public class LivroBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private Livro livro = new Livro();
+	//private Autor autor = new Autor();
 
 	private Integer autorId;
 
@@ -32,6 +35,9 @@ public class LivroBean implements Serializable {
 
 	@Inject
 	AutorDao autorDao;
+	
+	@Inject
+	FacesContext context;
 	
 	public void setAutorId(Integer autorId) {
 		this.autorId = autorId;
@@ -70,17 +76,19 @@ public class LivroBean implements Serializable {
 		System.out.println("Escrito por: " + autor.getNome());
 	}
 
+	@Transacional
 	public void gravar() {
 		System.out.println("Gravando livro " + this.livro.getTitulo());
 
 		if (livro.getAutores().isEmpty()) {
-			FacesContext.getCurrentInstance().addMessage("autor",
-					new FacesMessage("Livro deve ter pelo menos um Autor."));
+			context.addMessage("autor",
+			new FacesMessage("Livro deve ter pelo menos um Autor."));
 			return;
 		}
 
 		if(this.livro.getId() == null) {
 			livroDao.adiciona(this.livro);
+			//autorDao.adiciona(this.autor);
 			this.livros = livroDao.listaTodos();
 		} else {
 			livroDao.atualiza(this.livro);
@@ -89,6 +97,7 @@ public class LivroBean implements Serializable {
 		this.livro = new Livro();
 	}
 
+	@Transacional
 	public void remover(Livro livro) {
 		System.out.println("Removendo livro");
 		livroDao.remove(livro);
@@ -101,7 +110,7 @@ public class LivroBean implements Serializable {
 	
 	public void carregar(Livro livro) {
 		System.out.println("Carregando livro");
-		this.livro = livro;
+		this.livro = this.livroDao.buscaPorId(livro.getId());
 	}
 	
 	public String formAutor() {

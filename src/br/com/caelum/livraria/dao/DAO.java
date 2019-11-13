@@ -10,44 +10,25 @@ public class DAO<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final Class<T> classe;
+	private EntityManager em;
 
 	public DAO(EntityManager manager, Class<T> classe) {
+		this.em = manager;
 		this.classe = classe;
+		
 	}
 
 	public void adiciona(T t) {
-
-		// consegue a entity manager
-		EntityManager em = new JPAUtil().getEntityManager();
-
-		// abre transacao
-		em.getTransaction().begin();
-
 		// persiste o objeto
 		em.persist(t);
-
-		// commita a transacao
-		em.getTransaction().commit();
-
-		// fecha a entity manager
 	}
 
 	public void remove(T t) {
-		EntityManager em = new JPAUtil().getEntityManager();
-		em.getTransaction().begin();
-
 		em.remove(em.merge(t));
-
-		em.getTransaction().commit();
 	}
 
 	public void atualiza(T t) {
-		EntityManager em = new JPAUtil().getEntityManager();
-		em.getTransaction().begin();
-
 		em.merge(t);
-
-		em.getTransaction().commit();
 	}
 
 	public List<T> listaTodos() {
@@ -62,13 +43,11 @@ public class DAO<T> implements Serializable {
 	}
 
 	public T buscaPorId(Integer id) {
-		EntityManager em = new JPAUtil().getEntityManager();
 		T instancia = em.find(classe, id);
 		return instancia;
 	}
 
 	public int contaTodos() {
-		EntityManager em = new JPAUtil().getEntityManager();
 		long result = (Long) em.createQuery("select count(n) from livro n")
 				.getSingleResult();
 
@@ -76,7 +55,6 @@ public class DAO<T> implements Serializable {
 	}
 
 	public List<T> listaTodosPaginada(int firstResult, int maxResults) {
-		EntityManager em = new JPAUtil().getEntityManager();
 		CriteriaQuery<T> query = em.getCriteriaBuilder().createQuery(classe);
 		query.select(query.from(classe));
 

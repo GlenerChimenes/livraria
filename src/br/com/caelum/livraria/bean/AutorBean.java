@@ -11,13 +11,16 @@ import javax.inject.Named;
 import br.com.caelum.livraria.dao.AutorDao;
 import br.com.caelum.livraria.dao.DAO;
 import br.com.caelum.livraria.modelo.Autor;
+import br.com.caelum.livraria.tx.Transacional;
 
   
 @ViewScoped //javax.faces.view.ViewScoped
 public class AutorBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Autor autor = new Autor();
+	//private Autor autor = new Autor();
+	@Inject
+	private Autor autor;
 	
 	@Inject
 	private AutorDao dao; //CDI faz new AutorDao() e injeta
@@ -39,6 +42,7 @@ public class AutorBean implements Serializable {
 		this.autor = this.dao.buscaPorId(autorId);
 	}
 
+	@Transacional
 	public String gravar() {
 		System.out.println("Gravando autor " + this.autor.getNome());
 
